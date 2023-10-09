@@ -17,7 +17,7 @@ class TimerSwitch extends IPSModule
         parent::Create();
         
 
-        $this->RegisterPropertyString('SwitchOutput', '');
+        $this->RegisterPropertyInteger('SwitchOutput', 0);
         
         $Variables = [];
         foreach (static::$Variables as $Pos => $Variable) {
@@ -40,7 +40,7 @@ class TimerSwitch extends IPSModule
     {
         parent::ApplyChanges();
         
-        $SwitchOutput = $this->ReadPropertyString('SwitchOutput');
+        $SwitchOutput = $this->ReadPropertyInteger('SwitchOutput');
         
 
         $NewRows = static::$Variables;
