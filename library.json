@@ -1,0 +1,12 @@
+{
+  "id": "{f719c03e-f207-4b36-b174-3744bd812acd}",
+  "author": "Volker Hänsel",
+  "name": "IPS-Zeitschaltuhr",
+  "url": "https://github.com/volker76/IPS-Zeitschaltung",
+  "compatibility": {
+    "version": "6.0"
+  },
+  "version": "1.0",
+  "build": 0,
+  "date": 0
+}

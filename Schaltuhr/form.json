@@ -1,0 +1,16 @@
+{
+  "elements": [
+    {
+      "type": "SelectVariable",
+      "name": "SwitchOutput",
+      "caption": "Switch Output",
+      "requiredAction": 1,
+      "validVariableTypes": [ 0 ]
+    }
+  ],
+  "actions": [
+    {
+      "type": "TestCenter"
+    }
+  ]
+}

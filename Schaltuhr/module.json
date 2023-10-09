@@ -1,0 +1,13 @@
+{
+  "id": "{6097ef6d-0f29-405b-933d-dcc5d538fe94}",
+  "name": "TimerSwitch",
+  "type": 3,
+  "vendor": "",
+  "aliases": [
+    "Timer Switch"
+  ],
+  "parentRequirements": [],
+  "childRequirements": [],
+  "implemented": [],
+  "prefix": "TSW"
+}
