@@ -5,7 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../libs/SymconModulHelper/VariableProfileHelper.php';
 require_once __DIR__ . '/../libs/SymconModulHelper/DebugHelper.php';
 
-class TuyaSwitch extends  IPSModule
+class TimerSwitch extends IPSModule
 {
     public static $Variables = [
         ['TSW_Active', 'Active', VARIABLETYPE_BOOLEAN, '~Switch', [], '', true, true],
