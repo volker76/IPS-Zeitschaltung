@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 include_once __DIR__ . '/helper/TSW_autoload.php';
 
-class IPS-Zeitschaltuhr extends IPSModule
+class Zeitschaltuhr extends IPSModule
 {
     //Helper
     use TSW_IsItDay;
