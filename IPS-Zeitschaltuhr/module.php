@@ -91,7 +91,7 @@ class IPS_Zeitschaltuhr extends IPSModule
         }
 		
 		//Wochenplan
-		CreateWeekPlan(0);
+		$this->CreateWeekPlan(0);
 
         //Switching state
         $profile = self::MODULE_PREFIX . '.' . $this->InstanceID . '.SwitchingState';
