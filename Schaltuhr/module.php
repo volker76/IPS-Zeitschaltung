@@ -13,7 +13,7 @@
 
 declare(strict_types=1);
 
-include_once __DIR__ . '/helper/ZSU_autoload.php';
+include_once __DIR__ . '/helper/TSW_autoload.php';
 
 class Zeitschaltuhr extends IPSModule
 {
