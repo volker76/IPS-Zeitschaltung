@@ -14,8 +14,8 @@ class IPS_Zeitschaltuhr extends IPSModule
     use TSW_Sunset;
 
     //Constants
-    private const LIBRARY_GUID = '{f719c03e-f207-4b36-b174-3744bd812acd}';
-    private const MODULE_GUID = '{6097ef6d-0f29-405b-933d-dcc5d538fe94}';
+    private const LIBRARY_GUID = '{5c6f7f48-f275-424d-85a7-28a72157d685}';
+    private const MODULE_GUID = '{ae019d1e-d5a9-42a5-a641-d2658a0bbe3f}';
     private const MODULE_PREFIX = 'TSW';
     private const ABLAUFSTEUERUNG_MODULE_GUID = '{0559B287-1052-A73E-B834-EBD9B62CB938}';
     private const ABLAUFSTEUERUNG_MODULE_PREFIX = 'AST';
