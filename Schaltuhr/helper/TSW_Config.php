@@ -134,7 +134,7 @@ trait TSW_Config
                 ],
                 [
                     'type'    => 'Label',
-                    'caption' => "Version:\t\t" . $library['Version'] . '-' . $library['Build'] )
+                    'caption' => "Version:\t\t" . $library['Version'] . '-' . $library['Build'] 
                 ],
                 [
                     'type'    => 'Label',
