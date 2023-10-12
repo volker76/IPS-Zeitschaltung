@@ -1,28 +1,17 @@
 <?php
 
-/**
- * @project       Zeitschaltuhr/Zeitschaltuhr
- * @file          module.php
- * @author        Ulrich Bittner
- * @copyright     2022 Ulrich Bittner
- * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
- */
-
-/** @noinspection PhpUnhandledExceptionInspection */
-/** @noinspection PhpUnused */
-
 declare(strict_types=1);
 
 include_once __DIR__ . '/helper/TSW_autoload.php';
 
-class Zeitschaltuhr extends IPSModule
+class IPS-Zeitschaltuhr extends IPSModule
 {
     //Helper
-    use ZSU_IsItDay;
-    use ZSU_Config;
-    use ZSU_ScheduleAction;
-    use ZSU_Sunrise;
-    use ZSU_Sunset;
+    use TSW_IsItDay;
+    use TSW_Config;
+    use TSW_ScheduleAction;
+    use TSW_Sunrise;
+    use TSW_Sunset;
 
     //Constants
     private const LIBRARY_GUID = '{f719c03e-f207-4b36-b174-3744bd812acd}';
