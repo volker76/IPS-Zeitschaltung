@@ -91,7 +91,7 @@ class IPS_Zeitschaltuhr extends IPSModule
         }
 		
 		//Wochenplan
-		$this->CreateWeekPlan(0);
+		$this->CreateWeekPlan();
 
         //Switching state
         $profile = self::MODULE_PREFIX . '.' . $this->InstanceID . '.SwitchingState';
@@ -111,10 +111,10 @@ class IPS_Zeitschaltuhr extends IPSModule
         }
     }
 	
-	private function CreateWeekPlan($parent_id)
+	private function CreateWeekPlan()
 	{
 		$eid = IPS_CreateEvent(2);                  // Wochenplan Ereignis 2
-		//IPS_SetParent($eid, $parent_id);         // set parent
+		IPS_SetParent($eid, $this->InstanceID);         // set parent
 		IPS_SetIcon($eid, "Camera");
 		IPS_SetIdent($eid, "Weekplan");
 		IPS_SetInfo($eid, "Wochenplan Preset Positions");
