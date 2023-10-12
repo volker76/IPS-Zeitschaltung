@@ -89,6 +89,9 @@ class IPS_Zeitschaltuhr extends IPSModule
         if (!$id) {
             $this->SetValue('AutomaticMode', true);
         }
+		
+		//Wochenplan
+		CreateWeekPlan(0);
 
         //Switching state
         $profile = self::MODULE_PREFIX . '.' . $this->InstanceID . '.SwitchingState';
@@ -107,6 +110,32 @@ class IPS_Zeitschaltuhr extends IPSModule
             IPS_SetIcon(@$this->GetIDForIdent('NextToggleTime'), 'Calendar');
         }
     }
+	
+	private function CreateWeekplan($parent_id)
+	{
+		$eid = IPS_CreateEvent(2);                  // Wochenplan Ereignis 2
+		//IPS_SetParent($eid, $parent_id);         // set parent
+		IPS_SetIcon($eid, "Camera");
+		IPS_SetIdent($eid, "Weekplan");
+		IPS_SetInfo($eid, "Wochenplan Preset Positions");
+		IPS_SetName($eid, "Wochenplan Preset Positions");
+		IPS_SetEventScheduleAction($eid, 1, 'test 1', 0xFF0000, '$ident = "SetPosition";
+		$value = 0;
+		$target = $_IPS[\'TARGET\'];
+		if (IPS_InstanceExists($target)) {
+		  $target = IPS_GetObjectIDByIdent($ident, $target);
+		}
+		RequestAction($target, $value);');
+		IPS_SetEventScheduleAction($eid, 2, 'test 2', 0x00EDE9, '$ident = "SetPosition";
+		$value = 1;
+		$target = $_IPS[\'TARGET\'];
+		if (IPS_InstanceExists($target)) {
+		  $target = IPS_GetObjectIDByIdent($ident, $target);
+		}
+		RequestAction($target, $value);');
+		IPS_SetEventActive($eid, true);             //Ereignis aktivieren
+			return $eid;
+	}
 
     public function ApplyChanges()
     {
