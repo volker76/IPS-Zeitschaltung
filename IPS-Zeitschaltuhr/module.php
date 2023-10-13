@@ -31,8 +31,8 @@ class IPS_Zeitschaltuhr extends IPSModule
         $this->RegisterPropertyString('Note', '');
 
         ##### Schedule Action
-        $this->RegisterPropertyBoolean('UseScheduleAction', false);
-        $this->RegisterPropertyInteger('ScheduleAction', 0);
+        $this->RegisterPropertyBoolean('UseScheduleAction', true);
+        #$this->RegisterPropertyInteger('ScheduleAction', 0);
         $this->RegisterPropertyInteger('ScheduleActionToggleActionID1', 0);
         $this->RegisterPropertyInteger('ScheduleActionToggleActionID2', 1);
 
@@ -93,7 +93,8 @@ class IPS_Zeitschaltuhr extends IPSModule
 		
 		
 		//Wochenplan
-		$this->CreateWeekPlan(23);
+		$id = $this->CreateWeekPlan(23);
+		$this->RegisterPropertyInteger('ScheduleAction', $id);
 		
 		//AusgangZeit
         $id = @$this->GetIDForIdent('AusgangZeit');
@@ -145,7 +146,7 @@ class IPS_Zeitschaltuhr extends IPSModule
 		}
 		RequestAction($target, $value);');
 		IPS_SetEventActive($eid, true);             //Ereignis aktivieren
-			return $eid;
+		return $eid;
 	}
 
     public function ApplyChanges()
