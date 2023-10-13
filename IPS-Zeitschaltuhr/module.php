@@ -90,8 +90,15 @@ class IPS_Zeitschaltuhr extends IPSModule
             $this->SetValue('AutomaticMode', true);
         }
 		
+		
+		
 		//Wochenplan
-		$this->CreateWeekPlan();
+		$this->CreateWeekPlan(23);
+		
+		//AusgangZeit
+        $id = @$this->GetIDForIdent('AusgangZeit');
+        $this->RegisterVariableBoolean('AusgangZeit', 'AusgangZeit', '~Switch', 25);
+        
 
         //Switching state
         $profile = self::MODULE_PREFIX . '.' . $this->InstanceID . '.SwitchingState';
@@ -111,22 +118,26 @@ class IPS_Zeitschaltuhr extends IPSModule
         }
     }
 	
-	private function CreateWeekPlan()
+	private function CreateWeekPlan($pos)
 	{
 		$eid = IPS_CreateEvent(2);                  // Wochenplan Ereignis 2
+		
 		IPS_SetParent($eid, $this->InstanceID);         // set parent
-		IPS_SetIcon($eid, "Camera");
+		IPS_SetPosition($eid, $pos);
+		IPS_SetIcon($eid, "Calendar");
 		IPS_SetIdent($eid, "Weekplan");
-		IPS_SetInfo($eid, "Wochenplan Preset Positions");
-		IPS_SetName($eid, "Wochenplan Preset Positions");
-		IPS_SetEventScheduleAction($eid, 1, 'test 1', 0xFF0000, '$ident = "SetPosition";
+		IPS_SetInfo($eid, "Wochenplan Zeitschaltung");
+		IPS_SetName($eid, "Wochenplan Zeitschaltung");
+		IPS_SetEventScheduleGroup($eid, 0, 31); //Mo - Fr (1 + 2 + 4 + 8 + 16)
+        IPS_SetEventScheduleGroup($eid, 1, 96); //Sa + So (32 + 64)
+		IPS_SetEventScheduleAction($eid, 1, 'Aus', 0xB00000, '$ident = "AusgangZeit";
 		$value = 0;
 		$target = $_IPS[\'TARGET\'];
 		if (IPS_InstanceExists($target)) {
 		  $target = IPS_GetObjectIDByIdent($ident, $target);
 		}
 		RequestAction($target, $value);');
-		IPS_SetEventScheduleAction($eid, 2, 'test 2', 0x00EDE9, '$ident = "SetPosition";
+		IPS_SetEventScheduleAction($eid, 2, 'An', 0x00A000, '$ident = "AusgangZeit";
 		$value = 1;
 		$target = $_IPS[\'TARGET\'];
 		if (IPS_InstanceExists($target)) {
