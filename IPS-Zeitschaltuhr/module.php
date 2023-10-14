@@ -105,11 +105,11 @@ class IPS_Zeitschaltuhr extends IPSModule
         IPS_SetVariableProfileIcon($profile, 'Clock');
 		IPS_SetVariableProfileValues($profile, -120, 120, 15);
 		$id = @$this->GetIDForIdent('OffsetSunrise');
-        $this->RegisterVariableBoolean('OffsetSunrise', 'Offset Sonnenaufgang', $profile, 28);
+        $this->RegisterVariableInteger('OffsetSunrise', 'Offset Sonnenaufgang', $profile, 28);
 		
 		//OffsetSunset
 		$id = @$this->GetIDForIdent('OffsetSunset');
-        $this->RegisterVariableBoolean('OffsetSunset', 'Offset Sonnenuntergang', $profile, 29);
+        $this->RegisterVariableInteger('OffsetSunset', 'Offset Sonnenuntergang', $profile, 29);
 		
        
         //Switching state
