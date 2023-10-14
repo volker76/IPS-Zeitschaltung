@@ -18,7 +18,7 @@ trait TSW_ScheduleAction
             echo $warning . 'Es wird kein Wochenplan verwendet!';
             return;
         }
-        $id = $this->ReadPropertyInteger('ScheduleAction');
+        $id = @$this->GetIDForIdent('Weekplan');
         if ($id == 0 || !@IPS_ObjectExists($id)) {
             echo $warning . 'Der zugewiesene Wochenplan ist nicht vorhanden!';
             return;
@@ -58,7 +58,7 @@ trait TSW_ScheduleAction
             $this->SendDebug(__FUNCTION__, 'Es wird kein Wochenplan verwendet!', 0);
             return;
         }
-        $id = $this->ReadPropertyInteger('ScheduleAction');
+        $id = @$this->GetIDForIdent('Weekplan');
         if ($id != 0 && @IPS_ObjectExists($id)) {
             //Check schedule action
             $event = IPS_GetEvent($id);
@@ -110,7 +110,7 @@ trait TSW_ScheduleAction
         $timestamp = time();
         $searchTime = date('H', $timestamp) * 3600 + date('i', $timestamp) * 60 + date('s', $timestamp);
         $weekDay = date('N', $timestamp);
-        $id = $this->ReadPropertyInteger('ScheduleAction');
+        $id = @$this->GetIDForIdent('Weekplan');
         if ($id != 0 && @IPS_ObjectExists($id)) {
             $event = IPS_GetEvent($id);
             foreach ($event['ScheduleGroups'] as $group) {

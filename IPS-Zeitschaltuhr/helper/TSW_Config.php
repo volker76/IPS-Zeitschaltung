@@ -153,84 +153,8 @@ trait TSW_Config
             ]
         ];
 
-        ##### Element: Schedule action
-
-        $id = $this->ReadPropertyInteger('ScheduleAction');
-        $enableButton = false;
-        if ($id > 1 && @IPS_ObjectExists($id)) { //0 = main category, 1 = none
-            $enableButton = true;
-        }
-
-        $form['elements'][] = [
-            'type'    => 'ExpansionPanel',
-            'name'    => 'Panel2',
-            'caption' => 'Wochenplan',
-            'items'   => [
-                [
-                    'type'    => 'CheckBox',
-                    'name'    => 'UseScheduleAction',
-                    'caption' => 'Wochenplan'
-                ],
-                [
-                    'type'  => 'RowLayout',
-                    'items' => [
-                        [
-                            'type'     => 'SelectEvent',
-                            'name'     => 'ScheduleAction',
-                            'caption'  => 'Wochenplan',
-                            'width'    => '600px',
-                            'onChange' => self::MODULE_PREFIX . '_ModifyButton($id, "ScheduleActionConfigurationButton", "ID " . $ScheduleAction . "bearbeiten", $ScheduleAction);'
-                        ],
-                        [
-                            'type'    => 'Button',
-                            'caption' => 'Neuen Wochenplan erstellen',
-                            'onClick' => self::MODULE_PREFIX . '_CreateEvent($id);'
-                        ],
-                        [
-                            'type'    => 'Label',
-                            'caption' => ' '
-                        ],
-                        [
-                            'type'     => 'OpenObjectButton',
-                            'caption'  => 'ID ' . $id . ' bearbeiten',
-                            'name'     => 'ScheduleActionConfigurationButton',
-                            'visible'  => $enableButton,
-                            'objectID' => $id
-                        ]
-                    ]
-                ],
-                [
-                    'type'    => 'Select',
-                    'name'    => 'ScheduleActionToggleActionID1',
-                    'caption' => 'Schaltvorgang für die Aktion ID 1',
-                    'options' => [
-                        [
-                            'caption' => 'Ausschalten',
-                            'value'   => 0
-                        ],
-                        [
-                            'caption' => 'Einschalten',
-                            'value'   => 1
-                        ]
-                    ]
-                ],
-                [
-                    'type'    => 'Select',
-                    'name'    => 'ScheduleActionToggleActionID2',
-                    'caption' => 'Schaltvorgang für die Aktion ID 2',
-                    'options' => [
-                        [
-                            'caption' => 'Ausschalten',
-                            'value'   => 0
-                        ],
-                        [
-                            'caption' => 'Einschalten',
-                            'value'   => 1
-                        ]
-                    ]
-                ]
-            ]
-        ];
+  
+        
 
         ##### Element: Sunrise
 
