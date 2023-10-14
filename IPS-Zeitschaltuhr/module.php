@@ -98,12 +98,13 @@ class IPS_Zeitschaltuhr extends IPSModule
         $this->RegisterVariableBoolean('AusgangZeit', 'AusgangZeit', '~Switch', 25);
 		
 		//OffsetSunrise
-		$profile = self::MODULE_PREFIX . '.' . $this->InstanceID . '.DeltaTime';
+		$profile = 'DeltaTime';
         if (!IPS_VariableProfileExists($profile)) {
             IPS_CreateVariableProfile($profile, 1);
         }
         IPS_SetVariableProfileIcon($profile, 'Clock');
 		IPS_SetVariableProfileValues($profile, -120, 120, 15);
+		IPS_SetVariableProfileText($profile, "", " Minuten");
 		$id = @$this->GetIDForIdent('OffsetSunrise');
         $this->RegisterVariableInteger('OffsetSunrise', 'Offset Sonnenaufgang', $profile, 28);
 		
