@@ -90,17 +90,28 @@ class IPS_Zeitschaltuhr extends IPSModule
             $this->SetValue('AutomaticMode', true);
         }
 		
-		
-		
 		//Wochenplan
 		$id = $this->CreateWeekPlan(23);
-		$this->RegisterPropertyInteger('ScheduleAction', $id);
 		
 		//AusgangZeit
         $id = @$this->GetIDForIdent('AusgangZeit');
         $this->RegisterVariableBoolean('AusgangZeit', 'AusgangZeit', '~Switch', 25);
-        
-
+		
+		//OffsetSunrise
+		$profile = self::MODULE_PREFIX . '.' . $this->InstanceID . '.DeltaTime';
+        if (!IPS_VariableProfileExists($profile)) {
+            IPS_CreateVariableProfile($profile, 0);
+        }
+        IPS_SetVariableProfileIcon($profile, 'Clock');
+		IPS_SetVariableProfileValues($profile, -120, 120, 15);
+		$id = @$this->GetIDForIdent('OffsetSunrise');
+        $this->RegisterVariableBoolean('OffsetSunrise', 'Offset Sonnenaufgang', $profile, 28);
+		
+		//OffsetSunset
+		$id = @$this->GetIDForIdent('OffsetSunset');
+        $this->RegisterVariableBoolean('OffsetSunset', 'Offset Sonnenuntergang', $profile, 29);
+		
+       
         //Switching state
         $profile = self::MODULE_PREFIX . '.' . $this->InstanceID . '.SwitchingState';
         if (!IPS_VariableProfileExists($profile)) {
@@ -179,7 +190,7 @@ class IPS_Zeitschaltuhr extends IPSModule
         //Register references and update messages
         //Schedule action
         if ($this->ReadPropertyBoolean('UseScheduleAction')) {
-            $id = $this->ReadPropertyInteger('ScheduleAction');
+            $id = @$this->GetIDForIdent('Weekplan');
             if ($id != 0 && @IPS_ObjectExists($id)) {
                 $this->RegisterReference($id);
                 $this->RegisterMessage($id, EM_UPDATE);
@@ -220,6 +231,7 @@ class IPS_Zeitschaltuhr extends IPSModule
         IPS_SetHidden($this->GetIDForIdent('AutomaticMode'), !$this->ReadPropertyBoolean('EnableAutomaticMode'));
         IPS_SetHidden($this->GetIDForIdent('SwitchingState'), !$this->ReadPropertyBoolean('EnableSwitchingState'));
         IPS_SetHidden($this->GetIDForIdent('NextToggleTime'), !$this->ReadPropertyBoolean('EnableNextToggleTime'));
+		IPS_SetHidden($this->GetIDForIdent('AusgangZeit'), true);
 
         //Reset buffer
         $this->SetBuffer('LastMessage', json_encode([]));
@@ -275,7 +287,7 @@ class IPS_Zeitschaltuhr extends IPSModule
                 break;
 
             case EM_UPDATE:
-                if ($SenderID == $this->ReadPropertyInteger('ScheduleAction')) {
+                if ($SenderID == @$this->GetIDForIdent('Weekplan')) {
                     if ($Data[1] === false) {
                         break;
                     }
@@ -363,7 +375,7 @@ class IPS_Zeitschaltuhr extends IPSModule
         $timestamps = [];
         //Schedule action
         if ($this->ReadPropertyBoolean('UseScheduleAction')) {
-            $id = $this->ReadPropertyInteger('ScheduleAction');
+            $id = @$this->GetIDForIdent('Weekplan');
             if ($id != 0 && @IPS_ObjectExists($id)) {
                 $event = IPS_GetEvent($id);
                 $timestamp = $event['NextRun'];
@@ -497,7 +509,7 @@ class IPS_Zeitschaltuhr extends IPSModule
         $status = 102;
         //Schedule action
         if ($this->ReadPropertyBoolean('UseScheduleAction')) {
-            $id = $this->ReadPropertyInteger('ScheduleAction');
+            $id = @$this->GetIDForIdent('Weekplan');
             if ($id == 0 || @!IPS_ObjectExists($id)) {
                 $result = false;
                 $status = 200;
