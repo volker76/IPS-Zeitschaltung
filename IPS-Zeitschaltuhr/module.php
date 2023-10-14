@@ -100,7 +100,7 @@ class IPS_Zeitschaltuhr extends IPSModule
 		//OffsetSunrise
 		$profile = self::MODULE_PREFIX . '.' . $this->InstanceID . '.DeltaTime';
         if (!IPS_VariableProfileExists($profile)) {
-            IPS_CreateVariableProfile($profile, 0);
+            IPS_CreateVariableProfile($profile, 1);
         }
         IPS_SetVariableProfileIcon($profile, 'Clock');
 		IPS_SetVariableProfileValues($profile, -120, 120, 15);
