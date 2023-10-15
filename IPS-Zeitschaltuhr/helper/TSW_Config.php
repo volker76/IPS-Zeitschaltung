@@ -153,7 +153,49 @@ trait TSW_Config
             ]
         ];
 
-  
+        ##### Element: Visibility
+
+        $visibility = $this->ReadPropertyInteger('Visibility');
+        $enableSunriseButton = false;
+        if ($visibility > 1 && @IPS_ObjectExists($visibility)) { //0 = main category, 1 = none
+            $enableSunriseButton = true;
+        }
+
+        $form['elements'][] = [
+            'type'    => 'ExpansionPanel',
+            'name'    => 'Panel2b',
+            'caption' => 'Sonnenaufgang',
+            'items'   => [
+                [
+                    'type'    => 'CheckBox',
+                    'name'    => 'UseVisibility',
+                    'caption' => 'Flexible Anzeige'
+                ],
+                [
+                    'type'  => 'RowLayout',
+                    'items' => [
+                        [
+                            'type'     => 'SelectVariable',
+                            'name'     => 'Visibility',
+                            'caption'  => 'Sichtbarkeit',
+                            'width'    => '600px',
+                            'onChange' => self::MODULE_PREFIX . '_ModifyButton($id, "VisibilityConfigurationButton", "ID " . $Visibility . " bearbeiten", $Visibility);'
+                        ],
+                        [
+                            'type'    => 'Label',
+                            'caption' => ' '
+                        ],
+                        [
+                            'type'     => 'OpenObjectButton',
+                            'name'     => 'VisibilityConfigurationButton',
+                            'caption'  => 'ID ' . $visibility . ' bearbeiten',
+                            'visible'  => $enableVisibilityButton,
+                            'objectID' => $visibility
+                        ]
+                    ]
+                ]
+            ]
+        ];
         
 
         ##### Element: Sunrise
@@ -268,123 +310,6 @@ trait TSW_Config
                         [
                             'caption' => 'Einschalten',
                             'value'   => 1
-                        ]
-                    ]
-                ]
-            ]
-        ];
-
-        ##### Element: Is day
-
-        $isItDay = $this->ReadPropertyInteger('IsItDay');
-        $enableIsItDayButton = false;
-        if ($isItDay > 1 && @IPS_ObjectExists($isItDay)) { //0 = main category, 1 = none
-            $enableIsItDayButton = true;
-        }
-
-        $startOfDay = $this->ReadPropertyInteger('StartOfDay');
-        $enableStartOfDayButton = false;
-        if ($startOfDay > 1 && @IPS_ObjectExists($startOfDay)) { //0 = main category, 1 = none
-            $enableStartOfDayButton = true;
-        }
-
-        $endOfDay = $this->ReadPropertyInteger('EndOfDay');
-        $enableEndOfDayButton = false;
-        if ($endOfDay > 1 && @IPS_ObjectExists($endOfDay)) { //0 = main category, 1 = none
-            $enableEndOfDayButton = true;
-        }
-
-        $form['elements'][] = [
-            'type'    => 'ExpansionPanel',
-            'name'    => 'Panel5',
-            'caption' => 'Ist es Tag',
-            'items'   => [
-                [
-                    'type'    => 'CheckBox',
-                    'name'    => 'UseIsItDay',
-                    'caption' => 'Ist es Tag'
-                ],
-                [
-                    'type'  => 'RowLayout',
-                    'items' => [
-                        [
-                            'type'     => 'SelectVariable',
-                            'name'     => 'IsItDay',
-                            'caption'  => 'Ist es Tag',
-                            'width'    => '600px',
-                            'onChange' => self::MODULE_PREFIX . '_ModifyButton($id, "IsItDayConfigurationButton", "ID " . $IsItDay . " bearbeiten", $IsItDay);'
-                        ],
-                        [
-                            'type'    => 'Label',
-                            'caption' => ' '
-                        ],
-                        [
-                            'type'     => 'OpenObjectButton',
-                            'name'     => 'IsItDayConfigurationButton',
-                            'caption'  => 'ID ' . $isItDay . ' bearbeiten',
-                            'visible'  => $enableIsItDayButton,
-                            'objectID' => $isItDay
-                        ]
-                    ]
-                ],
-                [
-                    'type'    => 'Select',
-                    'name'    => 'IsItDayToggleAction',
-                    'caption' => 'Schaltvorgang',
-                    'options' => [
-                        [
-                            'caption' => 'Ausschalten',
-                            'value'   => 0
-                        ],
-                        [
-                            'caption' => 'Einschalten',
-                            'value'   => 1
-                        ]
-                    ]
-                ],
-                [
-                    'type'  => 'RowLayout',
-                    'items' => [
-                        [
-                            'type'     => 'SelectVariable',
-                            'name'     => 'StartOfDay',
-                            'caption'  => 'Tagesanfang',
-                            'width'    => '600px',
-                            'onChange' => self::MODULE_PREFIX . '_ModifyButton($id, "StartOfDayConfigurationButton", "ID " . $StartOfDay . " bearbeiten", $StartOfDay);'
-                        ],
-                        [
-                            'type'    => 'Label',
-                            'caption' => ' '
-                        ],
-                        [
-                            'type'     => 'OpenObjectButton',
-                            'name'     => 'StartOfDayConfigurationButton',
-                            'caption'  => 'ID ' . $startOfDay . ' bearbeiten',
-                            'visible'  => $enableStartOfDayButton,
-                            'objectID' => $startOfDay
-                        ]
-                    ]
-                ],
-                [
-                    'type'  => 'RowLayout',
-                    'items' => [
-                        [
-                            'type'     => 'SelectVariable',
-                            'name'     => 'EndOfDay',
-                            'caption'  => 'Tagesanfang',
-                            'width'    => '600px',
-                            'onChange' => self::MODULE_PREFIX . '_ModifyButton($id, "EndOfDayConfigurationButton", "ID " . $EndOfDay . " bearbeiten", $EndOfDay);'
-                        ],
-                        [
-                            'type'    => 'Label',
-                            'caption' => ' '
-                        ],
-                        [
-                            'type'     => 'OpenObjectButton',
-                            'name'     => 'EndOfDayConfigurationButton',
-                            'caption'  => 'ID ' . $endOfDay . ' bearbeiten',
-                            'visible'  => $enableEndOfDayButton,
-                            'objectID' => $endOfDay
                         ]
                     ]
                 ]
