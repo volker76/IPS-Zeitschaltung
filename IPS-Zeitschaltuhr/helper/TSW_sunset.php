@@ -52,13 +52,29 @@ trait TSW_Sunset
         }
         $this->SendDebug(__FUNCTION__, 'Es wird geprüft, ob es Sonnenuntergang ist', 0);
         $now = time();
+        
+        $sunriseOffset = 0;
+        $sunsetOffset = 0;
+        
+        $sunriseOffsetID = @$this->GetIDForIdent('OffsetSunrise');
+        if ($sunriseOffsetID)
+        {
+            $sunriseOffset = GetValueInteger($sunriseOffsetID)  * 60;
+        }
+        $sunsetOffsetID = @$this->GetIDForIdent('OffsetSunset');
+        if ($sunsetOffsetID)
+        {
+            $sunsetOffset = GetValueInteger($sunsetOffsetID) * 60;
+        }
+        
+        
         $sunsetID = $this->ReadPropertyInteger('Sunset');
         if ($sunsetID != 0 && @IPS_ObjectExists($sunsetID)) {
             if ($this->ReadPropertyBoolean('UseSunrise')) {
                 $sunriseID = $this->ReadPropertyInteger('Sunrise');
                 if ($sunriseID != 0 && @IPS_ObjectExists($sunriseID)) {
-                    $sunriseTime = GetValueInteger($sunriseID);
-                    $sunsetTime = GetValueInteger($sunsetID);
+                    $sunriseTime = GetValueInteger($sunriseID) + $sunriseOffset;
+                    $sunsetTime = GetValueInteger($sunsetID) + $sunsetOffset;
                     $sunrise = $sunriseTime - $now;
                     $sunset = $sunsetTime - $now;
                     if ($sunrise < $sunset) {

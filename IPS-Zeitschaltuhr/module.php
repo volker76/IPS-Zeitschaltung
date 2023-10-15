@@ -36,14 +36,20 @@ class IPS_Zeitschaltuhr extends IPSModule
         $this->RegisterPropertyInteger('ScheduleActionToggleActionID1', 0);
         $this->RegisterPropertyInteger('ScheduleActionToggleActionID2', 1);
 
+        $location_guid = "{45E97A63-F870-408A-B259-2933F7EABF74}";
+        $locationID=IPS_GetInstanceListByModuleID($location_guid);
+
+        $id = @IPS_GetObjectIDByIdent("Sunrise", $locationID[0]);       
         ##### Sunrise
-        $this->RegisterPropertyBoolean('UseSunrise', false);
-        $this->RegisterPropertyInteger('Sunrise', 0);
+        $this->RegisterPropertyBoolean('UseSunrise', true);
+        $this->RegisterPropertyInteger('Sunrise', $id);
         $this->RegisterPropertyInteger('SunriseToggleAction', 0);
 
+
+        $id = @IPS_GetObjectIDByIdent("Sunset", $locationID[0]);
         ##### Sunset
-        $this->RegisterPropertyBoolean('UseSunset', false);
-        $this->RegisterPropertyInteger('Sunset', 0);
+        $this->RegisterPropertyBoolean('UseSunset', true);
+        $this->RegisterPropertyInteger('Sunset', $id);
         $this->RegisterPropertyInteger('SunsetToggleAction', 1);
 
         ##### Is it day
@@ -93,9 +99,12 @@ class IPS_Zeitschaltuhr extends IPSModule
 		//Wochenplan
 		$id = $this->CreateWeekPlan(23);
 		
-		//AusgangZeit
-        $id = @$this->GetIDForIdent('AusgangZeit');
-        $this->RegisterVariableBoolean('AusgangZeit', 'AusgangZeit', '~Switch', 25);
+		$ScriptID = IPS_CreateScript(0);
+		IPS_SetParent($ScriptID, $this->InstanceID);
+		IPS_SetHidden($ScriptID,true);
+		IPS_SetName($ScriptID, "SetVar"); 
+        IPS_SetScriptContent($ScriptID,"<?php SetValue(\$_IPS['VARIABLE'], \$_IPS['VALUE']); ?>");
+	
 		
 		//OffsetSunrise
 		$profile = 'DeltaTime';
@@ -106,12 +115,15 @@ class IPS_Zeitschaltuhr extends IPSModule
 		IPS_SetVariableProfileValues($profile, -120, 120, 15);
 		IPS_SetVariableProfileText($profile, "", " Minuten");
 		$id = @$this->GetIDForIdent('OffsetSunrise');
-        $this->RegisterVariableInteger('OffsetSunrise', 'Offset Sonnenaufgang', $profile, 28);
+        $id = $this->RegisterVariableInteger('OffsetSunrise', 'Offset Sonnenaufgang', $profile, 28);
+        $this->EnableAction('OffsetSunrise');
+        IPS_SetVariableCustomAction ($id, $ScriptID);
 		
 		//OffsetSunset
 		$id = @$this->GetIDForIdent('OffsetSunset');
-        $this->RegisterVariableInteger('OffsetSunset', 'Offset Sonnenuntergang', $profile, 29);
-		
+        $id = $this->RegisterVariableInteger('OffsetSunset', 'Offset Sonnenuntergang', $profile, 29);
+        $this->EnableAction('OffsetSunset');
+		IPS_SetVariableCustomAction ($id, $ScriptID);
        
         //Switching state
         $profile = self::MODULE_PREFIX . '.' . $this->InstanceID . '.SwitchingState';
@@ -129,35 +141,45 @@ class IPS_Zeitschaltuhr extends IPSModule
         if (!$id) {
             IPS_SetIcon(@$this->GetIDForIdent('NextToggleTime'), 'Calendar');
         }
+        
+       
     }
 	
 	private function CreateWeekPlan($pos)
 	{
-		$eid = IPS_CreateEvent(2);                  // Wochenplan Ereignis 2
-		
-		IPS_SetParent($eid, $this->InstanceID);         // set parent
-		IPS_SetPosition($eid, $pos);
-		IPS_SetIcon($eid, "Calendar");
-		IPS_SetIdent($eid, "Weekplan");
-		IPS_SetInfo($eid, "Wochenplan Zeitschaltung");
-		IPS_SetName($eid, "Wochenplan Zeitschaltung");
-		IPS_SetEventScheduleGroup($eid, 0, 31); //Mo - Fr (1 + 2 + 4 + 8 + 16)
-        IPS_SetEventScheduleGroup($eid, 1, 96); //Sa + So (32 + 64)
-		IPS_SetEventScheduleAction($eid, 1, 'Aus', 0xB00000, '$ident = "AusgangZeit";
-		$value = 0;
-		$target = $_IPS[\'TARGET\'];
-		if (IPS_InstanceExists($target)) {
-		  $target = IPS_GetObjectIDByIdent($ident, $target);
-		}
-		RequestAction($target, $value);');
-		IPS_SetEventScheduleAction($eid, 2, 'An', 0x00A000, '$ident = "AusgangZeit";
-		$value = 1;
-		$target = $_IPS[\'TARGET\'];
-		if (IPS_InstanceExists($target)) {
-		  $target = IPS_GetObjectIDByIdent($ident, $target);
-		}
-		RequestAction($target, $value);');
-		IPS_SetEventActive($eid, true);             //Ereignis aktivieren
+	    //AusgangZeit
+        $id = @$this->GetIDForIdent('AusgangZeit');
+        $this->RegisterVariableBoolean('AusgangZeit', 'AusgangZeit', '~Switch', $pos+1);
+    
+        $eid = @$this->GetIDForIdent('Weekplan');
+        if ($eid == false)  //gibt es noch nicht
+        {
+    		$eid = IPS_CreateEvent(2);                  // Wochenplan Ereignis 2
+    		
+    		IPS_SetParent($eid, $this->InstanceID);         // set parent
+    		IPS_SetPosition($eid, $pos);
+    		IPS_SetIcon($eid, "Calendar");
+    		IPS_SetIdent($eid, "Weekplan");
+    		IPS_SetInfo($eid, "Wochenplan Zeitschaltung");
+    		IPS_SetName($eid, "Wochenplan Zeitschaltung");
+    		IPS_SetEventScheduleGroup($eid, 0, 31); //Mo - Fr (1 + 2 + 4 + 8 + 16)
+            IPS_SetEventScheduleGroup($eid, 1, 96); //Sa + So (32 + 64)
+    		IPS_SetEventScheduleAction($eid, 1, 'Aus', 0xB00000, '$ident = "AusgangZeit";
+    		$value = 0;
+    		$target = $_IPS[\'TARGET\'];
+    		if (IPS_InstanceExists($target)) {
+    		  $target = IPS_GetObjectIDByIdent($ident, $target);
+    		}
+    		RequestAction($target, $value);');
+    		IPS_SetEventScheduleAction($eid, 2, 'An', 0x00A000, '$ident = "AusgangZeit";
+    		$value = 1;
+    		$target = $_IPS[\'TARGET\'];
+    		if (IPS_InstanceExists($target)) {
+    		  $target = IPS_GetObjectIDByIdent($ident, $target);
+    		}
+    		RequestAction($target, $value);');
+    		IPS_SetEventActive($eid, true);             //Ereignis aktivieren
+        }
 		return $eid;
 	}
 
@@ -204,10 +226,21 @@ class IPS_Zeitschaltuhr extends IPSModule
                 $this->RegisterReference($id);
                 $this->RegisterMessage($id, VM_UPDATE);
             }
+            
+            $id = @$this->GetIDForIdent('OffsetSunrise');
+            if ($id != 0 && @IPS_ObjectExists($id)) {
+                $this->RegisterReference($id);
+                $this->RegisterMessage($id, VM_UPDATE);
+            }
         }
         //Sunset
         if ($this->ReadPropertyBoolean('UseSunset')) {
             $id = $this->ReadPropertyInteger('Sunset');
+            if ($id != 0 && @IPS_ObjectExists($id)) {
+                $this->RegisterReference($id);
+                $this->RegisterMessage($id, VM_UPDATE);
+            }
+            $id = @$this->GetIDForIdent('OffsetSunset');
             if ($id != 0 && @IPS_ObjectExists($id)) {
                 $this->RegisterReference($id);
                 $this->RegisterMessage($id, VM_UPDATE);
@@ -311,11 +344,21 @@ class IPS_Zeitschaltuhr extends IPSModule
                     $scriptText = self::MODULE_PREFIX . '_ExecuteSunriseAction(' . $this->InstanceID . ');';
                     IPS_RunScriptText($scriptText);
                 }
+                if ($SenderID == @$this->GetIDForIdent('OffsetSunrise') && $Data[1]) { // only on change
+                    $scriptText = self::MODULE_PREFIX . '_ExecuteSunriseAction(' . $this->InstanceID . ');';
+                    IPS_RunScriptText($scriptText);
+                }
+                
                 //Sunset
                 if ($SenderID == $this->ReadPropertyInteger('Sunset') && $Data[1]) { //only on change
                     $scriptText = self::MODULE_PREFIX . '_ExecuteSunsetAction(' . $this->InstanceID . ');';
                     IPS_RunScriptText($scriptText);
                 }
+                if ($SenderID == @$this->GetIDForIdent('OffsetSunset') && $Data[1]) { // only on change
+                    $scriptText = self::MODULE_PREFIX . '_ExecuteSunsetAction(' . $this->InstanceID . ');';
+                    IPS_RunScriptText($scriptText);
+                }
+                
                 //Is it day
                 if ($SenderID == $this->ReadPropertyInteger('IsItDay') && $Data[1]) { //only on change
                     $scriptText = self::MODULE_PREFIX . '_ExecuteIsItDayAction(' . $this->InstanceID . ');';
@@ -373,6 +416,23 @@ class IPS_Zeitschaltuhr extends IPSModule
             return;
         }
         $now = time();
+        
+        $sunriseOffset = 0;
+        $sunsetOffset = 0;
+        
+        $sunriseOffsetID = @$this->GetIDForIdent('OffsetSunrise');
+        if ($sunriseOffsetID)
+        {
+            $sunriseOffset = GetValueInteger($sunriseOffsetID) * 60;
+        }
+        $sunsetOffsetID = @$this->GetIDForIdent('OffsetSunset');
+        if ($sunsetOffsetID)
+        {
+            $sunsetOffset = GetValueInteger($sunsetOffsetID) * 60;
+        }
+        $this->SendDebug('Sunset Offset', $sunsetOffset, 0);
+        $this->SendDebug('Sunrise Offset', $sunriseOffset, 0);
+        
         $timestamps = [];
         //Schedule action
         if ($this->ReadPropertyBoolean('UseScheduleAction')) {
@@ -390,7 +450,7 @@ class IPS_Zeitschaltuhr extends IPSModule
         if ($this->ReadPropertyBoolean('UseSunrise')) {
             $id = $this->ReadPropertyInteger('Sunrise');
             if ($id != 0 && @IPS_ObjectExists($id)) {
-                $timestamp = GetValueInteger($id);
+                $timestamp = GetValueInteger($id) + $sunriseOffset;
                 if ($timestamp > $now) {
                     $interval = ($timestamp - $now) * 1000;
                     $timestamps[] = ['timer' => 'Sunrise', 'timestamp' => $timestamp, 'interval' => $interval];
@@ -401,7 +461,7 @@ class IPS_Zeitschaltuhr extends IPSModule
         if ($this->ReadPropertyBoolean('UseSunset')) {
             $id = $this->ReadPropertyInteger('Sunset');
             if ($id != 0 && @IPS_ObjectExists($id)) {
-                $timestamp = GetValueInteger($id);
+                $timestamp = GetValueInteger($id) + $sunsetOffset;
                 if ($timestamp > $now) {
                     $interval = ($timestamp - $now) * 1000;
                     $timestamps[] = ['timer' => 'Sunset', 'timestamp' => $timestamp, 'interval' => $interval];
