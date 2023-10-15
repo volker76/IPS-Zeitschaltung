@@ -31,8 +31,8 @@ class IPS_Zeitschaltuhr extends IPSModule
 		IPS_SetIcon($this->InstanceID,'EnergyProduction');
 
 		##### Visibility
-        $this->RegisterPropertyBoolean('UseVisibility', true);
-        $this->RegisterPropertyInteger('Visibility', $id);
+        $this->RegisterPropertyBoolean('UseVisibility', false);
+        $this->RegisterPropertyInteger('Visibility', 0);
 		
         ##### Schedule Action
         $this->RegisterPropertyBoolean('UseScheduleAction', true);
@@ -48,6 +48,8 @@ class IPS_Zeitschaltuhr extends IPSModule
         $this->RegisterPropertyBoolean('UseSunrise', true);
         $this->RegisterPropertyInteger('Sunrise', $id);
         $this->RegisterPropertyInteger('SunriseToggleAction', 0);
+        $scriptText = self::MODULE_PREFIX . '_ExecuteSunriseAction(' . $this->InstanceID . ');';
+        $this->RegisterTimer("Sunrise", 0, $scriptText);
 
 
         $id = @IPS_GetObjectIDByIdent("Sunset", $locationID[0]);
@@ -55,6 +57,8 @@ class IPS_Zeitschaltuhr extends IPSModule
         $this->RegisterPropertyBoolean('UseSunset', true);
         $this->RegisterPropertyInteger('Sunset', $id);
         $this->RegisterPropertyInteger('SunsetToggleAction', 1);
+        $scriptText = self::MODULE_PREFIX . '_ExecuteSunsetAction(' . $this->InstanceID . ');';
+        $this->RegisterTimer("Sunset", 0, $scriptText);
 
         ##### Target
         $this->RegisterPropertyInteger('TargetVariable', 0);
@@ -166,6 +170,8 @@ class IPS_Zeitschaltuhr extends IPSModule
             IPS_SetEventScheduleGroup($eid, 1, 96); //Sa + So (32 + 64)
 		    IPS_SetEventScheduleAction($eid, 1, 'Aus', 0xB00000, '<?php IPS_LogMessage(\$_IPS["SENDER"], "Wochenplan aus");');
     		IPS_SetEventScheduleAction($eid, 2, 'An', 0x00A000, '<?php IPS_LogMessage(\$_IPS["SENDER"], "Wochenplan an");');
+    		IPS_SetEventScheduleGroupPoint($eid, 0, 0, 0, 0, 0, 1); //Um 0:00 Aktion mit ID 1 (=Aus) aufrufen
+    		IPS_SetEventScheduleGroupPoint($eid, 1, 0, 0, 0, 0, 1); //Um 0:00 Aktion mit ID 1 (=Aus) aufrufen
     		IPS_SetEventActive($eid, true);             //Ereignis aktivieren
         }
 		return $eid;
@@ -199,6 +205,16 @@ class IPS_Zeitschaltuhr extends IPSModule
         }
 
         //Register references and update messages
+        
+        //Visibility
+        if ($this->ReadPropertyBoolean('UseVisibility')) {
+            $id = $this->ReadPropertyInteger('Visibility');
+            if ($id != 0 && @IPS_ObjectExists($id)) {
+                $this->RegisterReference($id);
+                $this->RegisterMessage($id, VM_UPDATE);
+            }
+        }
+        
         //Schedule action
         if ($this->ReadPropertyBoolean('UseScheduleAction')) {
             $id = @$this->GetIDForIdent('Weekplan');
@@ -241,6 +257,8 @@ class IPS_Zeitschaltuhr extends IPSModule
             $this->RegisterReference($id);
         }
 
+        $this->SetItemVisibility(0, true);
+        
         //WebFront options
         IPS_SetHidden($this->GetIDForIdent('Active'), !$this->ReadPropertyBoolean('EnableActive'));
         IPS_SetHidden($this->GetIDForIdent('AutomaticMode'), !$this->ReadPropertyBoolean('EnableAutomaticMode'));
@@ -319,6 +337,12 @@ class IPS_Zeitschaltuhr extends IPSModule
                 //$Data[4] = timestamp value changed
                 //$Data[5] = timestamp last value
 
+                //Visibility
+                if ($SenderID == $this->ReadPropertyInteger('Visibility') && $Data[1]) { // only on change
+                    $this->SendDebug('MessageSink', 'Visibility ' . $Data[0], 0);
+					$this->SetItemVisibility($SenderID, $Data[0]);
+                }
+                
                 //Sunrise
                 if ($SenderID == $this->ReadPropertyInteger('Sunrise') && $Data[1]) { // only on change
                     //$scriptText = self::MODULE_PREFIX . '_ExecuteSunriseAction(' . $this->InstanceID . ');';
@@ -346,6 +370,16 @@ class IPS_Zeitschaltuhr extends IPSModule
                
                 break;
 
+        }
+    }
+    
+    private function SetItemVisibility($sender, $visibility)
+    {
+        $this->SendDebug('MessageSink', 'Visibility of ' . $this->InstanceID . ' to ' . $visibility, 0);
+        IPS_SetHidden($this->InstanceID, !$visibility);
+        if ($sender != 0)
+        {
+            IPS_SetHidden($sender, $visibility);
         }
     }
 
@@ -401,6 +435,9 @@ class IPS_Zeitschaltuhr extends IPSModule
         $this->SendDebug('Sunset Offset', $sunsetOffset, 0);
         $this->SendDebug('Sunrise Offset', $sunriseOffset, 0);
         
+        $this->SetTimerInterval("Sunset", 0);
+        $this->SetTimerInterval("Sunrise", 0);
+        
         $timestamps = [];
         //Schedule action
         if ($this->ReadPropertyBoolean('UseScheduleAction')) {
@@ -421,6 +458,8 @@ class IPS_Zeitschaltuhr extends IPSModule
                 $timestamp = GetValueInteger($id) + $sunriseOffset;
                 if ($timestamp > $now) {
                     $interval = ($timestamp - $now) * 1000;
+                    $this->SetTimerInterval("Sunrise", $interval);
+                    $this->SendDebug('NextToggleTime','Sunrise timer in '. $interval / 1000 . " sec",0);
                     $timestamps[] = ['timer' => 'Sunrise', 'timestamp' => $timestamp, 'interval' => $interval];
                 }
             }
@@ -432,6 +471,8 @@ class IPS_Zeitschaltuhr extends IPSModule
                 $timestamp = GetValueInteger($id) + $sunsetOffset;
                 if ($timestamp > $now) {
                     $interval = ($timestamp - $now) * 1000;
+                    $this->SetTimerInterval("Sunset", $interval);
+                    $this->SendDebug('NextToggleTime','Sunset timer in '.$interval / 1000 . " sec",0);
                     $timestamps[] = ['timer' => 'Sunset', 'timestamp' => $timestamp, 'interval' => $interval];
                 }
             }

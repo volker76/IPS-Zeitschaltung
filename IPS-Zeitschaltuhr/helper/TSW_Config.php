@@ -156,20 +156,20 @@ trait TSW_Config
         ##### Element: Visibility
 
         $visibility = $this->ReadPropertyInteger('Visibility');
-        $enableSunriseButton = false;
+        $enableVisibilityButton = false;
         if ($visibility > 1 && @IPS_ObjectExists($visibility)) { //0 = main category, 1 = none
-            $enableSunriseButton = true;
+            $enableVisibilityButton = true;
         }
 
         $form['elements'][] = [
             'type'    => 'ExpansionPanel',
             'name'    => 'Panel2b',
-            'caption' => 'Sonnenaufgang',
+            'caption' => 'Sichtbarkeit Schaltbar',
             'items'   => [
                 [
                     'type'    => 'CheckBox',
                     'name'    => 'UseVisibility',
-                    'caption' => 'Flexible Anzeige'
+                    'caption' => 'Nutze schaltbare Anzeige'
                 ],
                 [
                     'type'  => 'RowLayout',
