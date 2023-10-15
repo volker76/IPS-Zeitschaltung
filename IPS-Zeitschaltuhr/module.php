@@ -164,8 +164,8 @@ class IPS_Zeitschaltuhr extends IPSModule
     		IPS_SetName($eid, "Wochenplan Zeitschaltung");
     		IPS_SetEventScheduleGroup($eid, 0, 31); //Mo - Fr (1 + 2 + 4 + 8 + 16)
             IPS_SetEventScheduleGroup($eid, 1, 96); //Sa + So (32 + 64)
-    		IPS_SetEventScheduleAction($eid, 1, 'Aus', 0xB00000, 'IPS_LogMessage($_IPS['SELF'], "Wochenplan aus");');
-    		IPS_SetEventScheduleAction($eid, 2, 'An', 0x00A000, 'IPS_LogMessage($_IPS['SELF'], "Wochenplan an");');
+		    IPS_SetEventScheduleAction($eid, 1, 'Aus', 0xB00000, '<?php IPS_LogMessage(\$_IPS['SENDER'], "Wochenplan aus");');
+    		IPS_SetEventScheduleAction($eid, 2, 'An', 0x00A000, '<?php IPS_LogMessage(\$_IPS['SENDER'], "Wochenplan an");');
     		IPS_SetEventActive($eid, true);             //Ereignis aktivieren
         }
 		return $eid;
