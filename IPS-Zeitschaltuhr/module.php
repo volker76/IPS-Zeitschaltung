@@ -459,7 +459,7 @@ class IPS_Zeitschaltuhr extends IPSModule
                 if ($timestamp > $now) {
                     $interval = ($timestamp - $now) * 1000;
                     $this->SetTimerInterval("Sunrise", $interval);
-                    $this->SendDebug('NextToggleTime','Sunrise timer in '. $interval / 1000 . " sec",0);
+                    $this->SendDebug('NextToggleTime','Sunrise timer in '. $interval / 1000.0 / 60.0 . " min",0);
                     $timestamps[] = ['timer' => 'Sunrise', 'timestamp' => $timestamp, 'interval' => $interval];
                 }
             }
@@ -472,7 +472,7 @@ class IPS_Zeitschaltuhr extends IPSModule
                 if ($timestamp > $now) {
                     $interval = ($timestamp - $now) * 1000;
                     $this->SetTimerInterval("Sunset", $interval);
-                    $this->SendDebug('NextToggleTime','Sunset timer in '.$interval / 1000 . " sec",0);
+                    $this->SendDebug('NextToggleTime','Sunset timer in '.$interval / 1000.0 / 60.0 . " min",0);
                     $timestamps[] = ['timer' => 'Sunset', 'timestamp' => $timestamp, 'interval' => $interval];
                 }
             }
