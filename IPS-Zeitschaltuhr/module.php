@@ -325,6 +325,7 @@ class IPS_Zeitschaltuhr extends IPSModule
                     }
                     $scriptText = self::MODULE_PREFIX . '_ExecuteScheduleAction(' . $this->InstanceID . ');';
                     IPS_RunScriptText($scriptText);
+					$this->SetNextToggleTime();
                 }
                 break;
 
