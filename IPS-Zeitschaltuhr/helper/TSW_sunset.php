@@ -77,6 +77,8 @@ trait TSW_Sunset
                     $sunsetTime = GetValueInteger($sunsetID) + $sunsetOffset;
                     $sunrise = $sunriseTime - $now;
                     $sunset = $sunsetTime - $now;
+					
+					$this->SendDebug(__FUNCTION__, ' Sunrise:' . $sunrise . ' Sunset:' . $sunset , 0);
                     if ($sunrise < $sunset) {
                         $this->SendDebug(__FUNCTION__, 'Es ist Sonnenuntergang.', 0);
                         $this->ExecuteSunsetAction();
