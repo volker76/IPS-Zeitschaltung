@@ -101,12 +101,7 @@ class IPS_Zeitschaltuhr extends IPSModule
 		$id = $this->CreateWeekPlan(23);
 		
 		//OffsetSunrise
-		$ScriptID = IPS_CreateScript(0);
-		//IPS_SetParent($ScriptID, $this->InstanceID);
-		IPS_SetHidden($ScriptID,true);
-		IPS_SetName($ScriptID, "SetVar"); 
-        IPS_SetScriptContent($ScriptID,"<?php SetValue(\$_IPS['VARIABLE'], \$_IPS['VALUE']); ?>");
-	
+		
 		$profile = 'DeltaTime';
         if (!IPS_VariableProfileExists($profile)) {
             IPS_CreateVariableProfile($profile, 1);
@@ -117,22 +112,13 @@ class IPS_Zeitschaltuhr extends IPSModule
 		$id = @$this->GetIDForIdent('OffsetSunrise');
         $id = $this->RegisterVariableInteger('OffsetSunrise', 'Offset Sonnenaufgang', $profile, 28);
         $this->EnableAction('OffsetSunrise');
-        IPS_SetVariableCustomAction ($id, $ScriptID);
-		IPS_SetParent($ScriptID, $id);
 		
 		//OffsetSunset
-		$ScriptID = IPS_CreateScript(0);
-		//IPS_SetParent($ScriptID, $this->InstanceID);
-		IPS_SetHidden($ScriptID,true);
-		IPS_SetName($ScriptID, "SetVar"); 
-        IPS_SetScriptContent($ScriptID,"<?php SetValue(\$_IPS['VARIABLE'], \$_IPS['VALUE']); ?>");
 	
 		$id = @$this->GetIDForIdent('OffsetSunset');
         $id = $this->RegisterVariableInteger('OffsetSunset', 'Offset Sonnenuntergang', $profile, 29);
         $this->EnableAction('OffsetSunset');
-		IPS_SetVariableCustomAction ($id, $ScriptID);
-		IPS_SetParent($ScriptID, $id);
-       
+
         //Switching state
         $profile = self::MODULE_PREFIX . '.' . $this->InstanceID . '.SwitchingState';
         if (!IPS_VariableProfileExists($profile)) {
@@ -257,7 +243,16 @@ class IPS_Zeitschaltuhr extends IPSModule
             $this->RegisterReference($id);
         }
 
-        $this->SetItemVisibility(0, true);
+        if ($this->ReadPropertyBoolean('UseVisibility')) {
+            $id = $this->ReadPropertyInteger('Visibility');
+            if ($id != 0 && @IPS_ObjectExists($id)) {
+                SetValueBoolean($id,false);
+                IPS_SetHidden($id,false);
+                IPS_SetHidden($this->InstanceID,true);
+            }
+        }
+        //$this->SetItemVisibility(0, true);
+    
         
         //WebFront options
         IPS_SetHidden($this->GetIDForIdent('Active'), !$this->ReadPropertyBoolean('EnableActive'));
@@ -274,6 +269,8 @@ class IPS_Zeitschaltuhr extends IPSModule
         }
 
         $this->SetActualState();
+        
+       
     }
 
     public function Destroy()
@@ -407,6 +404,14 @@ class IPS_Zeitschaltuhr extends IPSModule
                 $this->SetValue($Ident, $Value);
                 $this->SetActualState();
                 break;
+                
+            case 'OffsetSunset':
+                $this->SetValue($Ident, $Value);
+                break;
+                
+            case 'OffsetSunrise':
+                $this->SetValue($Ident, $Value);
+                break;    
         }
     }
 
